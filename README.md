@@ -7,3 +7,10 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+```shell
+cp .env.example .env - set your database connection
+composer install
+php artisan migrate:fresh --seed
+npm install
+npm run dev
+```
