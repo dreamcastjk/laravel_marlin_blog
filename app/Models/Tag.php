@@ -33,6 +33,8 @@ class Tag extends Model
 {
     use HasFactory, Sluggable;
 
+    protected $guarded = ['id'];
+
     /**
      * Posts that belongs to tag.
      *
