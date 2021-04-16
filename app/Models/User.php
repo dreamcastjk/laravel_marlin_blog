@@ -137,18 +137,21 @@ class User extends Authenticatable
     }
 
     /**
-     * @param UploadedFile $avatar
+     * @param UploadedFile|null $avatar
      */
-    public function uploadAvatar(UploadedFile $avatar): void
+    public function uploadAvatar(?UploadedFile $avatar): void
     {
         if (!$avatar) {
             return;
         }
 
-        Storage::delete('uploads/'.$this->image);
+        if ($this->avatar) {
+            Storage::delete('uploads/'.$this->avatar);
+        }
+
         $fileName = Str::random(10) . '.' . $avatar->extension();
         $avatar->storeAs('uploads', $fileName);
-        $this->image = $fileName;
+        $this->avatar = $fileName;
         $this->save();
     }
 
@@ -157,11 +160,11 @@ class User extends Authenticatable
      */
     public function getAvatar(): string
     {
-        if ($this->image) {
+        if (!$this->avatar) {
             return '/img/no-user-image.png';
         }
 
-        return '/uploads/' . $this->image;
+        return '/uploads/' . $this->avatar;
     }
 
     /**
