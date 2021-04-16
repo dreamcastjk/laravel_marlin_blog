@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TagsController;
+use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -15,6 +16,7 @@ Route::prefix('admin')->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('tags', TagsController::class);
     Route::resource('users', UsersController::class);
+    Route::resource('posts', PostsController::class);
 });
 
 
