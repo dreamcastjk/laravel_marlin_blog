@@ -64,7 +64,6 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
     ];
 
     /**
@@ -115,7 +114,7 @@ class User extends Authenticatable
         $user = new static;
 
         $user->fill($fields);
-        $user->password = bcrypt($fields['password']);
+
         $user->save();
 
         return $user;
@@ -123,8 +122,17 @@ class User extends Authenticatable
 
     public function edit(array $fields): void
     {
-        $this->fill($fields);
-        $this->password = bcrypt($fields['password']);
+        $this->update($fields);
+    }
+
+    public function generatePassword(?string $password): void
+    {
+        if (!$password) {
+            return;
+        }
+
+        $this->password = bcrypt($password);
+
         $this->save();
     }
 
@@ -133,6 +141,7 @@ class User extends Authenticatable
      */
     public function remove(): void
     {
+        $this->deleteAvatar();
         $this->delete();
     }
 
@@ -145,9 +154,7 @@ class User extends Authenticatable
             return;
         }
 
-        if ($this->avatar) {
-            Storage::delete('uploads/'.$this->avatar);
-        }
+        $this->deleteAvatar();
 
         $fileName = Str::random(10) . '.' . $avatar->extension();
         $avatar->storeAs('uploads', $fileName);
@@ -160,11 +167,19 @@ class User extends Authenticatable
      */
     public function getAvatar(): string
     {
-        if (!$this->avatar) {
-            return '/img/no-user-image.png';
+        if (!$this->hasAvatar()) {
+            return $this->getDefaultAvatar();
         }
 
         return '/uploads/' . $this->avatar;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultAvatar(): string
+    {
+        return '/img/no-user-image.png';
     }
 
     /**
@@ -225,5 +240,23 @@ class User extends Authenticatable
         }
 
         $this->ban();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAvatar(): bool
+    {
+        return !is_null($this->avatar);
+    }
+
+    /**
+     *
+     */
+    public function deleteAvatar(): void
+    {
+        if ($this->hasAvatar()) {
+            Storage::delete('uploads/'.$this->avatar);
+        }
     }
 }

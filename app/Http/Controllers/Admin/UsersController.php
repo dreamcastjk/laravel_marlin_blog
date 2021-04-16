@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -41,6 +42,7 @@ class UsersController extends Controller
     {
         $user = User::add($request->validated());
         $user->uploadAvatar($request->file('avatar'));
+        $user->generatePassword($request->get('password'));
 
         return redirect()->route('users.index');
     }
@@ -70,25 +72,28 @@ class UsersController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UserUpdateRequest $request
+     * @param User $user
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        //
+        $user->edit($request->validated());
+        $user->uploadAvatar($request->file('avatar'));
+        $user->generatePassword($request->get('password'));
+
+        return redirect()->route('users.edit', $user);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return RedirectResponse
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(User $user): RedirectResponse
     {
-        //
+        $user->remove();
+
+        return redirect()->route('users.index');
     }
 }
