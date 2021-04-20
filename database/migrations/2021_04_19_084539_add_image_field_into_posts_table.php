@@ -13,7 +13,7 @@ class AddImageFieldIntoPostsTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', fn (Blueprint $table) => $table->string('image')->nullable());
+        Schema::table('posts', fn (Blueprint $table) => $table->string('image')->nullable());
     }
 
     /**
@@ -23,6 +23,6 @@ class AddImageFieldIntoPostsTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', fn (Blueprint $table) => $table->dropColumn('image'));
+        Schema::table('posts', fn (Blueprint $table) => $table->dropColumn('image'));
     }
 }

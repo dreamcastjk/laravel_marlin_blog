@@ -49,7 +49,7 @@
                                 <td>категория</td>
                                 <td>Теги</td>
                                 <td>
-                                    <img src="../assets/dist/img/boxed-bg.jpg" alt="" width="100">
+                                    <img src="{{ $post->getImage() }}" alt="" width="100">
                                 </td>
                                 <td>
                                     <a href="{{ route('posts.edit', $post) }}" class="fa fa-pencil"></a>

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\PostRequest;
-use App\Models\Category;
-use App\Models\Post;
+use Exception;
 use App\Models\Tag;
-use Illuminate\Contracts\View\View;
+use App\Models\Post;
+use App\Models\Category;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest;
+use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 
 class PostsController extends Controller
 {
@@ -43,54 +47,53 @@ class PostsController extends Controller
 
     /**
      * @param PostRequest $request
+     *
+     * @return RedirectResponse
      */
-    public function store(PostRequest $request)
+    public function store(PostRequest $request): RedirectResponse
     {
-        echo 'ok';
+        $post = Post::add($request->validated());
+        $post->uploadImage($request->file('image'));
+        $post->setCategory($request->get('category_id'));
+        $post->setTags($request->get('tags'));
+        $post->toggleStatus($request->get('status'));
+        $post->toggleFeatured($request->get('is_featured'));
+
+        return redirect()->route('posts.index');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Post $post
+     * @return Application|Factory|View
      */
-    public function show($id)
+    public function edit(Post $post): View
+    {
+        $tags = Tag::pluck('title', 'id')->all();
+        $categories = Category::pluck('title', 'id')->all();
+
+        return view('admin.posts.edit', compact('post', 'tags', 'categories'));
+    }
+
+    /**
+     * @param Request $request
+     * @param Post $post
+     */
+    public function update(Request $request, Post $post)
     {
         //
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param Post $post
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
+     *
+     * @throws Exception
      */
-    public function edit($id)
+    public function destroy(Post $post): RedirectResponse
     {
-        //
-    }
+        $post->remove();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return redirect()->route('posts.index');
     }
 }

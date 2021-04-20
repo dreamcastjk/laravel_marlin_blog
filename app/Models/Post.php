@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Storage;
+use Exception;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,6 +62,9 @@ class Post extends Model
     protected $fillable = [
         'title',
         'content',
+        'date',
+        'image',
+        'category_id',
     ];
 
     /**
@@ -94,7 +99,16 @@ class Post extends Model
             'post_tags',
             'post_id',  // поле по которому связана текущая модель в таблице
             'tag_id'    // поле используемое связью, т.е. тегом.
-        );
+        )->withTimestamps();
+    }
+
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setDateAttribute($value): void
+    {
+        $this->attributes['date'] = Carbon::createFromFormat('d/m/y', $value)->format('Y-m-d');
     }
 
     /**
@@ -118,7 +132,7 @@ class Post extends Model
     {
         $post = new static;
         $post->fill($fields);
-        $post->user_id = auth()->user()->id;
+        $post->user_id = optional(auth()->user())->id;
 
         $post->save();
 
@@ -135,28 +149,54 @@ class Post extends Model
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function remove(): void
     {
-        Storage::delete('uploads/'.$this->image);
+        $this->deleteImage();
+        $this->tags()->detach();
         $this->delete();
     }
 
     /**
-     * @param UploadedFile $image
+     * @param UploadedFile|null $image
      */
-    public function uploadImage(UploadedFile $image): void
+    public function uploadImage(?UploadedFile $image): void
     {
         if (!$image) {
             return;
         }
 
-        Storage::delete('uploads/'.$this->image);
+        $this->update(['image' => $this->storeImage($image)]);
+    }
+
+    /**
+     * @param UploadedFile $image
+     * @return string
+     */
+    private function storeImage(UploadedFile $image): string
+    {
+        $this->deleteImage();
+
         $fileName = Str::random(10) . '.' .$image->extension();
         $image->storeAs('uploads', $fileName);
 
-        $this->update(['image' => $fileName]);
+        return $fileName;
+    }
+
+    /**
+     * @return bool
+     */
+    private function hasImage(): bool
+    {
+        return !is_null($this->image);
+    }
+
+    private function deleteImage(): void
+    {
+        if ($this->hasImage()) {
+            Storage::delete('uploads/'.$this->image);
+        }
     }
 
     /**
@@ -214,7 +254,7 @@ class Post extends Model
     /**
      * @param int|null $value
      */
-    public function toggleStatus(?int $value): void
+    public function toggleStatus(?string $value): void
     {
         if (!$value) {
             $this->setDraft();
@@ -242,9 +282,9 @@ class Post extends Model
     }
 
     /**
-     * @param int|null $value
+     * @param string|null $value
      */
-    public function toggleFeatured(?int $value): void
+    public function toggleFeatured(?string $value): void
     {
         if (!$value) {
             $this->setStandard();
