@@ -9,7 +9,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -65,26 +65,28 @@ class Post extends Model
         'date',
         'image',
         'category_id',
+        'status',
+        'is_featured',
     ];
 
     /**
      * Post category.
      *
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function category(): HasOne
+    public function category(): BelongsTo
     {
-        return $this->hasOne(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     /**
      * Post author.
      *
-     * @return HasOne
+     * @return BelongsTo
      */
-    public function author(): HasOne
+    public function author(): BelongsTo
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -252,7 +254,7 @@ class Post extends Model
     }
 
     /**
-     * @param int|null $value
+     * @param string|null $value
      */
     public function toggleStatus(?string $value): void
     {
@@ -293,5 +295,33 @@ class Post extends Model
         }
 
         $this->setFeatured();
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategoryTitle(): string
+    {
+        return $this->category ? $this->category->title : 'Нет категории';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTagsTitles(): string
+    {
+        return $this->tags->isNotEmpty()
+            ? implode(' ,', $this->tags->pluck('title')->all())
+            : 'Нет тэгов';
+    }
+
+    /**
+     * @param $value
+     *
+     * @return string
+     */
+    public function getDateAttribute($value): string
+    {
+        return Carbon::createFromFormat('Y-m-d', $value)->format('d/m/y');
     }
 }

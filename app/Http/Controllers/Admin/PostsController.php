@@ -6,13 +6,12 @@ use Exception;
 use App\Models\Tag;
 use App\Models\Post;
 use App\Models\Category;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Foundation\Application;
 
 class PostsController extends Controller
 {
@@ -71,16 +70,32 @@ class PostsController extends Controller
         $tags = Tag::pluck('title', 'id')->all();
         $categories = Category::pluck('title', 'id')->all();
 
-        return view('admin.posts.edit', compact('post', 'tags', 'categories'));
+        $selectedTags = $post->tags->pluck('id')->all();
+
+        return view('admin.posts.edit', compact(
+            'post',
+            'tags',
+            'categories',
+            'selectedTags'
+        ));
     }
 
     /**
-     * @param Request $request
+     * @param PostRequest $request
      * @param Post $post
+     *
+     * @return RedirectResponse
      */
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post): RedirectResponse
     {
-        //
+        $post->edit($request->validated());
+        $post->uploadImage($request->file('image'));
+        $post->setCategory($request->get('category_id'));
+        $post->setTags($request->get('tags'));
+        $post->toggleStatus($request->get('status'));
+        $post->toggleFeatured($request->get('is_featured'));
+
+        return redirect()->route('posts.edit', $post);
     }
 
     /**
