@@ -1,0 +1,16 @@
+version: '3'          # версия докера
+services:             # нужные сервисы которые требуются для проекта например mysql, redis, nginx, php-fpm, php-cli
+  blog_mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: new_blog
+      MYSQL_USER: stas
+      MYSQL_PASSWORD: stas
+    volumes:
+      - blog_mysql:/var/lib/mysql # путь где будут храниться данные базы данных, чтобы они не удалялись при каждом запуске
+    ports:
+      - 3307:3306  # проброс порта с 3307 на стандартный порт 3306 для mysql
+
+volumes:
+  blog_mysql:
