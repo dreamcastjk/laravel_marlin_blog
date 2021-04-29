@@ -29,9 +29,10 @@ class PostFactory extends Factory
             'content' => $this->faker->text,
             'category_id' => Category::inRandomOrder()->first()->id,
             'status' => random_int(Post::STATUS_DRAFT, Post::STATUS_PUBLIC),
-            'views' => $this->faker->randomDigit,
+            'views' => $this->faker->numberBetween(0, 5000),
             'is_featured' => random_int(Post::IS_STANDARD, Post::IS_FEATURED),
             'date' => Carbon::today()->addDays(random_int(1, 5))->format('d/m/y'),
+            'description' => $this->faker->text,
         ];
     }
 }

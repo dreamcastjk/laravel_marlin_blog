@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 
@@ -14,6 +15,8 @@ class HomeController extends Controller
      */
     public function index(): Renderable
     {
-        return view('pages.index');
+        $posts = Post::with(['category', 'tags'])->paginate(2);
+
+        return view('pages.index', compact('posts'));
     }
 }

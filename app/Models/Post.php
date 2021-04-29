@@ -69,6 +69,7 @@ class Post extends Model
         'category_id',
         'status',
         'is_featured',
+        'description',
     ];
 
     /**
@@ -209,7 +210,7 @@ class Post extends Model
     public function getImage(): string
     {
         if (!$this->image) {
-            return '/img/no-image.png';
+            return '/img/no-post-image.jpg';
         }
 
         return '/uploads/' . $this->image;
@@ -228,9 +229,9 @@ class Post extends Model
     }
 
     /**
-     * @param array $ids
+     * @param array|null $ids
      */
-    public function setTags(array $ids): void
+    public function setTags(?array $ids): void
     {
         if (!$ids) {
             return;
@@ -325,5 +326,13 @@ class Post extends Model
     public function getDateAttribute($value): string
     {
         return Carbon::createFromFormat('Y-m-d', $value)->format('d/m/y');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate(): string
+    {
+        return Carbon::createFromFormat('d/m/y', $this->date)->format('F d, Y');
     }
 }

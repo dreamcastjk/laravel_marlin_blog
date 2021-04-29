@@ -28,6 +28,7 @@ class PostRequest extends FormRequest
             'content' => ['required'],
             'date' => ['required'],
             'image' => ['nullable', 'image'],
+            'description' => ['nullable']
         ];
     }
 }
