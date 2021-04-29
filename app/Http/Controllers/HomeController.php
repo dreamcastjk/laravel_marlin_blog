@@ -19,4 +19,13 @@ class HomeController extends Controller
 
         return view('pages.index', compact('posts'));
     }
+
+    /**
+     * @param Post $post
+     * @return Renderable
+     */
+    public function show(Post $post): Renderable
+    {
+        return view('pages.show', compact('post'));
+    }
 }

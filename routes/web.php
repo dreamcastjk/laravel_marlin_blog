@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('', [HomeController::class, 'index'])->name('home');
+Route::get('show/{post:slug}', [HomeController::class, 'show'])->name('post.show');
 
 Route::prefix('admin')->group(function () {
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
@@ -21,5 +22,3 @@ Route::prefix('admin')->group(function () {
 
 
 Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

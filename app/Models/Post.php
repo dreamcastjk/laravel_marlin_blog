@@ -335,4 +335,20 @@ class Post extends Model
     {
         return Carbon::createFromFormat('d/m/y', $this->date)->format('F d, Y');
     }
+
+    /**
+     * @return mixed
+     */
+    public function hasPrevious(): bool
+    {
+        return self::where('id', '<', $this->id)->max('id');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function hasNext(): bool
+    {
+        return self::where('id', '>', $this->id)->min('id');
+    }
 }
