@@ -8,7 +8,7 @@
     </div>
     <div class="post-content">
         <header class="entry-header text-center text-uppercase">
-            <h6><a href="#"> {{ optional($post->category)->title }}</a></h6>
+            <h6><a href="{{ route('category.show', $post->category) }}"> {{ optional($post->category)->title }}</a></h6>
 
             <h1 class="entry-title"><a href="{{ route('post.show', $post) }}">{{ $post->title }}</a></h1>
 

@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('', [HomeController::class, 'index'])->name('home');
 Route::get('show/{post:slug}', [HomeController::class, 'show'])->name('post.show');
+Route::get('tag/{tag:slug}', [HomeController::class, 'tag'])->name('tag.show');
+Route::get('category/{category:slug}', [HomeController::class, 'category'])->name('category.show');
 
 Route::prefix('admin')->group(function () {
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
