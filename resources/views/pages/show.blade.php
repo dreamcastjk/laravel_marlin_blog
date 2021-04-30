@@ -79,57 +79,15 @@
                         <h4>You might also like</h4>
                     </div>
                     <div class="items">
-                        <div class="single-item">
-                            <a href="#">
-                                <img src="assets/images/related-post-1.jpg" alt="">
+                        @foreach($post->related() as $relatedPost)
+                            <div class="single-item">
+                                <a href="{{ route('post.show', $relatedPost) }}">
+                                    <img src="{{ $relatedPost->getImage() }}" alt="">
+                                    <p>{{ $relatedPost->title }}</p>
+                                </a>
+                            </div>
+                        @endforeach
 
-                                <p>Just Wondering at Beach</p>
-                            </a>
-                        </div>
-
-
-                        <div class="single-item">
-                            <a href="#">
-                                <img src="assets/images/related-post-2.jpg" alt="">
-
-                                <p>Just Wondering at Beach</p>
-                            </a>
-                        </div>
-
-
-                        <div class="single-item">
-                            <a href="#">
-                                <img src="assets/images/related-post-3.jpg" alt="">
-
-                                <p>Just Wondering at Beach</p>
-                            </a>
-                        </div>
-
-
-                        <div class="single-item">
-                            <a href="#">
-                                <img src="assets/images/related-post-1.jpg" alt="">
-
-                                <p>Just Wondering at Beach</p>
-                            </a>
-                        </div>
-
-                        <div class="single-item">
-                            <a href="#">
-                                <img src="assets/images/related-post-2.jpg" alt="">
-
-                                <p>Just Wondering at Beach</p>
-                            </a>
-                        </div>
-
-
-                        <div class="single-item">
-                            <a href="#">
-                                <img src="assets/images/related-post-3.jpg" alt="">
-
-                                <p>Just Wondering at Beach</p>
-                            </a>
-                        </div>
                     </div>
                 </div><!--related post carousel-->
                 <div class="bottom-comment"><!--bottom comment-->

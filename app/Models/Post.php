@@ -337,18 +337,52 @@ class Post extends Model
     }
 
     /**
-     * @return mixed
+     * * Проверяем есть предыдущий пост перед текущим.
+     *
+     * @return int
      */
-    public function hasPrevious(): bool
+    public function hasPrevious(): ?int
     {
         return self::where('id', '<', $this->id)->max('id');
     }
 
     /**
-     * @return mixed
+     * Проверяем есть след. пост после текущего.
+     *
+     * @return int
      */
-    public function hasNext(): bool
+    public function hasNext(): ?int
     {
         return self::where('id', '>', $this->id)->min('id');
+    }
+
+    /**
+     * Получаем предыдущий пост.
+     *
+     * @return $this
+     */
+    public function getPrevious(): self
+    {
+        return self::whereId($this->hasPrevious())->first();
+    }
+
+    /**
+     * Получаем след. пост.
+     *
+     * @return $this
+     */
+    public function getNext(): self
+    {
+        return self::whereId($this->hasNext())->first();
+    }
+
+    /**
+     * Посты для карусельки в просмотре постов.
+     *
+     * @return Post[]|Collection
+     */
+    public function related(): Collection
+    {
+        return self::all()->except($this->id);
     }
 }
